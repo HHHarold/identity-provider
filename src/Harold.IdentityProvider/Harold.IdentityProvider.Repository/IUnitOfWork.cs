@@ -7,5 +7,6 @@ namespace Harold.IdentityProvider.Repository
         IGenericRepository<Logins> Logins { get; }
         IGenericRepository<Roles> Roles { get; }
         IGenericRepository<Users>  Users { get; }
+        bool Save();
     }
 }

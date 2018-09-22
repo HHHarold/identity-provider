@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.EntityFrameworkCore;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
@@ -8,38 +9,58 @@ namespace Harold.IdentityProvider.Repository.SqlServer
     public class GenericRepository<T> : IGenericRepository<T> where T : class
     {
         private readonly HaroldIdentityProviderContext _context;
+        private readonly DbSet<T> dbSet;
 
         public GenericRepository(HaroldIdentityProviderContext context)
         {
             _context = context;
+            dbSet = _context.Set<T>();
         }
 
-        public bool Create(T entity)
+        public void Create(T entity)
         {
-            _context.Set<T>().Add(entity);
-            return _context.SaveChanges() > 0; 
+            dbSet.Add(entity);
         }
 
-        public bool Delete(T entity)
+        public void Delete(object id)
         {
-            _context.Set<T>().Remove(entity);
-            return _context.SaveChanges() > 0;
+            T entityToDelete = dbSet.Find(id);
+            Delete(entityToDelete);
         }
 
-        public IEnumerable<T> GetAll()
+        public void Delete(T entityToDelete)
         {
-            return _context.Set<T>();
+            if (_context.Entry(entityToDelete).State == EntityState.Detached) dbSet.Attach(entityToDelete);
+            dbSet.Remove(entityToDelete);
         }
 
-        public IEnumerable<T> GetByCondition(Expression<Func<T, bool>> expression)
+        public IEnumerable<T> Get(Expression<Func<T, bool>> filter = null, Func<IQueryable<T>, IOrderedQueryable<T>> orderBy = null, string includeProperties = "")
         {
-            return _context.Set<T>().Where(expression);
+            IQueryable<T> query = dbSet;
+            if (filter != null) query = query.Where(filter);
+            foreach (var includeProperty in includeProperties.Split(new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries))
+            {
+                query = query.Include(includeProperties);
+            }
+            if(orderBy != null)
+            {
+                return orderBy(query).ToList();
+            }
+            else
+            {
+                return query.ToList();
+            }
         }
-        
-        public bool Update(T entity)
+
+        public T GetById(object id)
         {
-            _context.Set<T>().Update(entity);
-            return _context.SaveChanges() > 0;
+            return dbSet.Find(id);
+        }
+
+        public void Update(T entityToUpdate)
+        {
+            dbSet.Attach(entityToUpdate);
+            _context.Entry(entityToUpdate).State = EntityState.Modified;
         }
     }
 }
