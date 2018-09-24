@@ -18,13 +18,6 @@ namespace Harold.IdentityProvider.Repository.SqlServer
         public virtual DbSet<Roles> Roles { get; set; }
         public virtual DbSet<Users> Users { get; set; }
 
-        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-        {
-            if (!optionsBuilder.IsConfigured)
-            {
-                optionsBuilder.UseSqlServer("Server=DESKTOP-D5CP97M\\SQLEXPRESS;Database=HaroldIdentityProvider;Trusted_Connection=True;");
-            }
-        }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -35,8 +28,6 @@ namespace Harold.IdentityProvider.Repository.SqlServer
                 entity.HasIndex(e => e.UserName)
                     .HasName("AK_Logins_UserName")
                     .IsUnique();
-
-                entity.Property(e => e.LoginId).ValueGeneratedNever();
 
                 entity.Property(e => e.PasswordHash)
                     .IsRequired()
@@ -68,26 +59,28 @@ namespace Harold.IdentityProvider.Repository.SqlServer
             {
                 entity.HasKey(e => e.RolId);
 
-                entity.Property(e => e.RolId).ValueGeneratedNever();
+                entity.HasIndex(e => e.Name)
+                    .HasName("AK_Roles_Name")
+                    .IsUnique();
+
+                entity.Property(e => e.Description).HasColumnType("text");
 
                 entity.Property(e => e.Name)
                     .IsRequired()
-                    .HasMaxLength(50);
+                    .HasMaxLength(20);
             });
 
             modelBuilder.Entity<Users>(entity =>
             {
                 entity.HasKey(e => e.UserId);
 
-                entity.Property(e => e.UserId).ValueGeneratedNever();
-
                 entity.Property(e => e.FirstName)
                     .IsRequired()
-                    .HasMaxLength(60);
+                    .HasMaxLength(20);
 
                 entity.Property(e => e.LastName)
                     .IsRequired()
-                    .HasMaxLength(60);
+                    .HasMaxLength(20);
             });
         }
     }

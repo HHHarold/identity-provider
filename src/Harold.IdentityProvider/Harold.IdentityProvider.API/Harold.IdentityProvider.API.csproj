@@ -9,12 +9,16 @@
   </ItemGroup>
 
   <ItemGroup>
+    <PackageReference Include="AutoMapper.Extensions.Microsoft.DependencyInjection" Version="5.0.1" />
     <PackageReference Include="Microsoft.AspNetCore.App" />
+    <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="2.1.1" />
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\Harold.IdentityProvider.IService\Harold.IdentityProvider.IService.csproj" />
     <ProjectReference Include="..\Harold.IdentityProvider.Repository.SqlServer\Harold.IdentityProvider.Repository.SqlServer.csproj" />
     <ProjectReference Include="..\Harold.IdentityProvider.Repository\Harold.IdentityProvider.Repository.csproj" />
+    <ProjectReference Include="..\Harold.IdentityProvider.Service\Harold.IdentityProvider.Service.csproj" />
   </ItemGroup>
 
 </Project>

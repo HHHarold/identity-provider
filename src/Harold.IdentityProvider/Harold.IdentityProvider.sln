@@ -5,13 +5,17 @@ VisualStudioVersion = 15.0.28010.2016
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{00D1A9C2-B5F0-4AF3-8072-F6C62B433612}") = "Harold.IdentityProvider.Database", "Harold.IdentityProvider.Database\Harold.IdentityProvider.Database.sqlproj", "{C7CB735C-EEA4-45F5-821B-680CFA4D9CB5}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Harold.IdentityProvider.API", "Harold.IdentityProvider.API\Harold.IdentityProvider.API.csproj", "{04474ED9-3944-4D3D-9FB0-3F28AF673220}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Harold.IdentityProvider.API", "Harold.IdentityProvider.API\Harold.IdentityProvider.API.csproj", "{04474ED9-3944-4D3D-9FB0-3F28AF673220}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Harold.IdentityProvider.Model", "Harold.IdentityProvider.Model\Harold.IdentityProvider.Model.csproj", "{45F5F3E4-A501-4F5E-8906-B3AF0552082D}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Harold.IdentityProvider.Model", "Harold.IdentityProvider.Model\Harold.IdentityProvider.Model.csproj", "{45F5F3E4-A501-4F5E-8906-B3AF0552082D}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Harold.IdentityProvider.Repository", "Harold.IdentityProvider.Repository\Harold.IdentityProvider.Repository.csproj", "{783A069E-4CCA-4035-AC91-771810963F10}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Harold.IdentityProvider.Repository", "Harold.IdentityProvider.Repository\Harold.IdentityProvider.Repository.csproj", "{783A069E-4CCA-4035-AC91-771810963F10}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Harold.IdentityProvider.Repository.SqlServer", "Harold.IdentityProvider.Repository.SqlServer\Harold.IdentityProvider.Repository.SqlServer.csproj", "{896243BB-2F51-490C-9DD5-F70BBB5AF0A4}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Harold.IdentityProvider.Repository.SqlServer", "Harold.IdentityProvider.Repository.SqlServer\Harold.IdentityProvider.Repository.SqlServer.csproj", "{896243BB-2F51-490C-9DD5-F70BBB5AF0A4}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Harold.IdentityProvider.IService", "Harold.IdentityProvider.IService\Harold.IdentityProvider.IService.csproj", "{0D49FF0C-B325-4CB3-87FA-573F52F87C29}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Harold.IdentityProvider.Service", "Harold.IdentityProvider.Service\Harold.IdentityProvider.Service.csproj", "{B62329B3-46CE-4A00-A626-5A5FDCC2AC43}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -41,6 +45,14 @@ Global
 		{896243BB-2F51-490C-9DD5-F70BBB5AF0A4}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{896243BB-2F51-490C-9DD5-F70BBB5AF0A4}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{896243BB-2F51-490C-9DD5-F70BBB5AF0A4}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0D49FF0C-B325-4CB3-87FA-573F52F87C29}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0D49FF0C-B325-4CB3-87FA-573F52F87C29}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0D49FF0C-B325-4CB3-87FA-573F52F87C29}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0D49FF0C-B325-4CB3-87FA-573F52F87C29}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B62329B3-46CE-4A00-A626-5A5FDCC2AC43}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B62329B3-46CE-4A00-A626-5A5FDCC2AC43}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B62329B3-46CE-4A00-A626-5A5FDCC2AC43}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B62329B3-46CE-4A00-A626-5A5FDCC2AC43}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
+using Harold.IdentityProvider.Repository.SqlServer.Extensions;
 
 namespace Harold.IdentityProvider.Repository.SqlServer
 {
@@ -34,7 +35,7 @@ namespace Harold.IdentityProvider.Repository.SqlServer
             dbSet.Remove(entityToDelete);
         }
 
-        public IEnumerable<T> Get(Expression<Func<T, bool>> filter = null, Func<IQueryable<T>, IOrderedQueryable<T>> orderBy = null, string includeProperties = "")
+        public IEnumerable<T> Get(Expression<Func<T, bool>> filter = null, string orderBy = null, string includeProperties = "")
         {
             IQueryable<T> query = dbSet;
             if (filter != null) query = query.Where(filter);
@@ -44,7 +45,7 @@ namespace Harold.IdentityProvider.Repository.SqlServer
             }
             if(orderBy != null)
             {
-                return orderBy(query).ToList();
+                return query.OrderBy(orderBy);
             }
             else
             {
