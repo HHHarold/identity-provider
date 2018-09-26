@@ -13,10 +13,6 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Harold.IdentityProvider.Rep
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Harold.IdentityProvider.Repository.SqlServer", "Harold.IdentityProvider.Repository.SqlServer\Harold.IdentityProvider.Repository.SqlServer.csproj", "{896243BB-2F51-490C-9DD5-F70BBB5AF0A4}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Harold.IdentityProvider.IService", "Harold.IdentityProvider.IService\Harold.IdentityProvider.IService.csproj", "{0D49FF0C-B325-4CB3-87FA-573F52F87C29}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Harold.IdentityProvider.Service", "Harold.IdentityProvider.Service\Harold.IdentityProvider.Service.csproj", "{B62329B3-46CE-4A00-A626-5A5FDCC2AC43}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -45,14 +41,6 @@ Global
 		{896243BB-2F51-490C-9DD5-F70BBB5AF0A4}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{896243BB-2F51-490C-9DD5-F70BBB5AF0A4}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{896243BB-2F51-490C-9DD5-F70BBB5AF0A4}.Release|Any CPU.Build.0 = Release|Any CPU
-		{0D49FF0C-B325-4CB3-87FA-573F52F87C29}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{0D49FF0C-B325-4CB3-87FA-573F52F87C29}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{0D49FF0C-B325-4CB3-87FA-573F52F87C29}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{0D49FF0C-B325-4CB3-87FA-573F52F87C29}.Release|Any CPU.Build.0 = Release|Any CPU
-		{B62329B3-46CE-4A00-A626-5A5FDCC2AC43}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{B62329B3-46CE-4A00-A626-5A5FDCC2AC43}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{B62329B3-46CE-4A00-A626-5A5FDCC2AC43}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{B62329B3-46CE-4A00-A626-5A5FDCC2AC43}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

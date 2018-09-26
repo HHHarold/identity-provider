@@ -22,12 +22,7 @@ namespace Harold.IdentityProvider.Repository.SqlServer
         {
             dbSet.Add(entity);
         }
-
-        public void Delete(object id)
-        {
-            T entityToDelete = dbSet.Find(id);
-            Delete(entityToDelete);
-        }
+        
 
         public void Delete(T entityToDelete)
         {

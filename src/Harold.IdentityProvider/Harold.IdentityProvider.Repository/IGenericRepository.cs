@@ -10,7 +10,6 @@ namespace Harold.IdentityProvider.Repository
         T GetById(object id);
         void Create(T entity);
         void Update(T entityToUpdate);
-        void Delete(object id);
         void Delete(T entityToDelete);
     }
 }

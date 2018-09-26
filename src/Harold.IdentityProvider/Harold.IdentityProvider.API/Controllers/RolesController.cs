@@ -1,6 +1,8 @@
-﻿using Harold.IdentityProvider.IService;
-using Harold.IdentityProvider.Model.Request;
+﻿using FluentValidation.AspNetCore;
+using Harold.IdentityProvider.Model.Models;
+using Harold.IdentityProvider.Repository;
 using Microsoft.AspNetCore.Mvc;
+using System.Linq;
 
 namespace Harold.IdentityProvider.API.Controllers
 {
@@ -8,47 +10,56 @@ namespace Harold.IdentityProvider.API.Controllers
     [ApiController]
     public class RolesController : ControllerBase
     {
-        private readonly IRolesService _service;
-        public RolesController(IRolesService service)
+        private readonly IUnitOfWork _unitOfWork;
+        public RolesController(IUnitOfWork unitOfWork)
         {
-            _service = service;
+            _unitOfWork = unitOfWork;
         }
 
         [HttpGet("{rolId}")]
         public IActionResult GetById([FromRoute]int rolId)
         {
-            var response = _service.GetById(rolId);
-            return Ok(response.Data);
+            var rol = _unitOfWork.Roles.GetById(rolId);
+            if (rol == null) return NotFound();
+            return Ok(rol);
         }
 
         [HttpGet]
         public IActionResult Get()
         {
-            var response = _service.Get(orderBy: "Name");           
-            return Ok(response.Data);
+            var roles = _unitOfWork.Roles.Get(orderBy: "Name");
+            if (roles.Count() == 0) return NotFound();
+            return Ok(roles);
         }        
 
         [HttpPost]
-        public IActionResult Create([FromBody] RolesRequest rolesRequest)
+        public IActionResult Create([FromBody] [CustomizeValidator(RuleSet=("default, create"))] Roles rol)
         {
-            var response = _service.Create(rolesRequest);
-            return Ok(response.Data);
+            _unitOfWork.Roles.Create(rol);
+            _unitOfWork.Save();
+            return CreatedAtRoute("GetById",rol.RolId,rol);
         }
 
-        [HttpPut]
-        public IActionResult Update([FromBody] RolesRequest rolesRequest)
+        [HttpPut("{rolId}")]
+        public IActionResult Update(int rolId, [FromBody] [CustomizeValidator(RuleSet = ("default, update"))] Roles rol)
         {
-            var response = _service.Update(rolesRequest);
-            return Ok(response.Data);
+            var dbRol = _unitOfWork.Roles.GetById(rolId);
+            if (dbRol == null) return NotFound();
+            _unitOfWork.Roles.Update(rol);
+            _unitOfWork.Save();
+            return NoContent();
         }
 
         [HttpDelete("{rolId}")]
         public IActionResult Delete([FromRoute] int rolId)
         {
-            var response = _service.Delete(rolId);
-            return Ok(response.Data);
+            var logins = _unitOfWork.Logins.Get(filter: l => l.RoleId == rolId);
+            if (logins.Any()) return BadRequest("Can't delete rol. It has related logins. Delete those logins first.");
+            var rol = _unitOfWork.Roles.GetById(rolId);
+            if (rol == null) return NotFound();
+            _unitOfWork.Roles.Delete(rol);
+            _unitOfWork.Save();
+            return NoContent();
         }
-
-
     }
 }
