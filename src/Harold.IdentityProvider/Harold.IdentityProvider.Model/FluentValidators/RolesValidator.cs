@@ -7,6 +7,7 @@ namespace Harold.IdentityProvider.Model.FluentValidators
     {
         public RolesValidator()
         {
+
             RuleSet("create", () =>
             {
                 RuleFor(x => x.RolId).Empty();
@@ -17,7 +18,7 @@ namespace Harold.IdentityProvider.Model.FluentValidators
                 RuleFor(x => x.RolId).NotEmpty();
             });
 
-            RuleFor(x => x.Name).NotEmpty().MaximumLength(20);            
+            RuleFor(x => x.Name).NotEmpty().MaximumLength(20);
         }
     }
 }

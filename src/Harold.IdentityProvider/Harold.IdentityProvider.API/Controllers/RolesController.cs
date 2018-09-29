@@ -1,8 +1,13 @@
-﻿using FluentValidation.AspNetCore;
+﻿using FluentValidation;
+using FluentValidation.AspNetCore;
+using Harold.IdentityProvider.API.Models;
+using Harold.IdentityProvider.Model.FluentValidators;
 using Harold.IdentityProvider.Model.Models;
 using Harold.IdentityProvider.Repository;
 using Microsoft.AspNetCore.Mvc;
 using System.Linq;
+
+
 
 namespace Harold.IdentityProvider.API.Controllers
 {
@@ -11,9 +16,11 @@ namespace Harold.IdentityProvider.API.Controllers
     public class RolesController : ControllerBase
     {
         private readonly IUnitOfWork _unitOfWork;
+        private readonly RolesValidator _validator;
         public RolesController(IUnitOfWork unitOfWork)
         {
             _unitOfWork = unitOfWork;
+            _validator = new RolesValidator();
         }
 
         [HttpGet("{rolId}")]
@@ -30,20 +37,26 @@ namespace Harold.IdentityProvider.API.Controllers
             var roles = _unitOfWork.Roles.Get(orderBy: "Name");
             if (roles.Count() == 0) return NotFound();
             return Ok(roles);
-        }        
+        }
 
         [HttpPost]
-        public IActionResult Create([FromBody] [CustomizeValidator(RuleSet=("default, create"))] Roles rol)
+        public IActionResult Create([FromBody] Roles rol)
         {
+            _validator.Validate(rol, ruleSet: "default,create").AddToModelState(ModelState, null);            
+            if (!ModelState.IsValid) return StatusCode(422, new ValidationResultModel(ModelState));
+
             _unitOfWork.Roles.Create(rol);
             _unitOfWork.Save();
             return CreatedAtRoute("GetById",rol.RolId,rol);
         }
 
-        [HttpPut("{rolId}")]
-        public IActionResult Update(int rolId, [FromBody] [CustomizeValidator(RuleSet = ("default, update"))] Roles rol)
+        [HttpPut]
+        public IActionResult Update([FromBody] Roles rol)
         {
-            var dbRol = _unitOfWork.Roles.GetById(rolId);
+            _validator.Validate(rol, ruleSet: "default,update").AddToModelState(ModelState, null);
+            if (!ModelState.IsValid) return StatusCode(422, new ValidationResultModel(ModelState));
+
+            var dbRol = _unitOfWork.Roles.GetById(rol.RolId);
             if (dbRol == null) return NotFound();
             _unitOfWork.Roles.Update(rol);
             _unitOfWork.Save();
