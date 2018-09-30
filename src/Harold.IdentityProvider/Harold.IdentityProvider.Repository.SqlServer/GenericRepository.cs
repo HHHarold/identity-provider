@@ -40,23 +40,24 @@ namespace Harold.IdentityProvider.Repository.SqlServer
             }
             if(orderBy != null)
             {
-                return query.OrderBy(orderBy);
+                return query.OrderBy(orderBy).AsNoTracking().ToList();
             }
             else
             {
-                return query.ToList();
+                return query.AsNoTracking().ToList();
             }
         }
 
         public T GetById(object id)
         {
-            return dbSet.Find(id);
+            var entity = dbSet.Find(id);
+            _context.Entry(entity).State = EntityState.Detached;
+            return entity;
         }
 
         public void Update(T entityToUpdate)
         {
-            dbSet.Attach(entityToUpdate);
-            _context.Entry(entityToUpdate).State = EntityState.Modified;
+            dbSet.Update(entityToUpdate);
         }
     }
 }

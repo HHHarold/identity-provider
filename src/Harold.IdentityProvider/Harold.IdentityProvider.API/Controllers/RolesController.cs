@@ -23,7 +23,7 @@ namespace Harold.IdentityProvider.API.Controllers
             _validator = new RolesValidator();
         }
 
-        [HttpGet("{rolId}")]
+        [HttpGet("{rolId}", Name = nameof(GetById))]
         public IActionResult GetById([FromRoute]int rolId)
         {
             var rol = _unitOfWork.Roles.GetById(rolId);
@@ -47,7 +47,7 @@ namespace Harold.IdentityProvider.API.Controllers
 
             _unitOfWork.Roles.Create(rol);
             _unitOfWork.Save();
-            return CreatedAtRoute("GetById",rol.RolId,rol);
+            return CreatedAtRoute(nameof(RolesController.GetById), new { rolId = rol.RolId }, rol);
         }
 
         [HttpPut]
