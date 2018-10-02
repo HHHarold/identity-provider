@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Harold.IdentityProvider.Repository.SqlServer
 {
-    public partial class HaroldIdentityProviderContext : DbContext
+    public class HaroldIdentityProviderContext : DbContext
     {
         public HaroldIdentityProviderContext()
         {
@@ -14,50 +14,15 @@ namespace Harold.IdentityProvider.Repository.SqlServer
         {
         }
 
-        public virtual DbSet<Logins> Logins { get; set; }
         public virtual DbSet<Roles> Roles { get; set; }
         public virtual DbSet<Users> Users { get; set; }
 
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            modelBuilder.Entity<Logins>(entity =>
-            {
-                entity.HasKey(e => e.LoginId);
-
-                entity.HasIndex(e => e.UserName)
-                    .HasName("AK_Logins_UserName")
-                    .IsUnique();
-
-                entity.Property(e => e.PasswordHash)
-                    .IsRequired()
-                    .HasMaxLength(32);
-
-                entity.Property(e => e.PasswordSalt)
-                    .IsRequired()
-                    .HasMaxLength(64);
-
-                entity.Property(e => e.UserName)
-                    .IsRequired()
-                    .HasMaxLength(20)
-                    .IsUnicode(false);
-
-                entity.HasOne(d => d.Role)
-                    .WithMany(p => p.Logins)
-                    .HasForeignKey(d => d.RoleId)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK_Logins_Roles");
-
-                entity.HasOne(d => d.User)
-                    .WithMany(p => p.Logins)
-                    .HasForeignKey(d => d.UserId)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK_Logins_Users");
-            });
-
             modelBuilder.Entity<Roles>(entity =>
             {
-                entity.HasKey(e => e.RolId);
+                entity.HasKey(e => e.RoleId);
 
                 entity.HasIndex(e => e.Name)
                     .HasName("AK_Roles_Name")
@@ -74,6 +39,10 @@ namespace Harold.IdentityProvider.Repository.SqlServer
             {
                 entity.HasKey(e => e.UserId);
 
+                entity.HasIndex(e => e.Username)
+                    .HasName("AK_Users_Username")
+                    .IsUnique();
+
                 entity.Property(e => e.FirstName)
                     .IsRequired()
                     .HasMaxLength(20);
@@ -81,6 +50,25 @@ namespace Harold.IdentityProvider.Repository.SqlServer
                 entity.Property(e => e.LastName)
                     .IsRequired()
                     .HasMaxLength(20);
+
+                entity.Property(e => e.PasswordHash)
+                    .IsRequired()
+                    .HasMaxLength(32);
+
+                entity.Property(e => e.PasswordSalt)
+                    .IsRequired()
+                    .HasMaxLength(64);
+
+                entity.Property(e => e.Username)
+                    .IsRequired()
+                    .HasMaxLength(20)
+                    .IsUnicode(false);
+
+                entity.HasOne(d => d.Role)
+                    .WithMany(p => p.Users)
+                    .HasForeignKey(d => d.RoleId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_Users_Roles");
             });
         }
     }

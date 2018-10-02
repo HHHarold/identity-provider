@@ -1,5 +1,7 @@
-﻿using Harold.IdentityProvider.Repository;
+﻿using Harold.IdentityProvider.IService;
+using Harold.IdentityProvider.Repository;
 using Harold.IdentityProvider.Repository.SqlServer;
+using Harold.IdentityProvider.Service;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
@@ -7,7 +9,11 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using System.IO;
-
+using AutoMapper;
+using FluentValidation.AspNetCore;
+using FluentValidation;
+using Harold.IdentityProvider.Model.FluentValidators;
+using Harold.IdentityProvider.Model.Models;
 
 namespace Harold.IdentityProvider.API
 {
@@ -27,10 +33,18 @@ namespace Harold.IdentityProvider.API
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddMvc()
+                    .AddFluentValidation()
                     .SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
+            services.Configure<ApiBehaviorOptions>(options =>
+            {
+                options.SuppressModelStateInvalidFilter = true;
+            });
             services.AddSingleton(Configuration);
             services.AddDbContext<HaroldIdentityProviderContext>(options => options.UseSqlServer(Configuration.GetConnectionString("SqlServer")));
             services.AddTransient<IUnitOfWork, UnitOfWork>();
+            services.AddSingleton<IUsersService, UsersService>();
+            services.AddTransient<IValidator<Roles>, RolesValidator>();
+            services.AddAutoMapper();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

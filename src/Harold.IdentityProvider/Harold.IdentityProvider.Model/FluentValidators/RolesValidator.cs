@@ -10,12 +10,12 @@ namespace Harold.IdentityProvider.Model.FluentValidators
 
             RuleSet("create", () =>
             {
-                RuleFor(x => x.RolId).Empty();
+                RuleFor(x => x.RoleId).Empty();
             });
 
             RuleSet("update", () =>
             {
-                RuleFor(x => x.RolId).NotEmpty();
+                RuleFor(x => x.RoleId).NotEmpty();
             });
 
             RuleFor(x => x.Name).NotEmpty().MaximumLength(20);

@@ -1,6 +1,6 @@
 ﻿namespace Harold.IdentityProvider.IService
 {
-    public class Response<T>
+    public class GenericResponse<T>
     {
         public bool Success { get; set; }
         public string Message { get; set; }

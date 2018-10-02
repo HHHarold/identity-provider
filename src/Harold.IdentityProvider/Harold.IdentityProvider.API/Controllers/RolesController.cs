@@ -1,7 +1,5 @@
-﻿using FluentValidation;
-using FluentValidation.AspNetCore;
-using Harold.IdentityProvider.API.Models;
-using Harold.IdentityProvider.Model.FluentValidators;
+﻿using FluentValidation.AspNetCore;
+using Harold.IdentityProvider.API.Filters;
 using Harold.IdentityProvider.Model.Models;
 using Harold.IdentityProvider.Repository;
 using Microsoft.AspNetCore.Mvc;
@@ -16,11 +14,9 @@ namespace Harold.IdentityProvider.API.Controllers
     public class RolesController : ControllerBase
     {
         private readonly IUnitOfWork _unitOfWork;
-        private readonly RolesValidator _validator;
         public RolesController(IUnitOfWork unitOfWork)
         {
             _unitOfWork = unitOfWork;
-            _validator = new RolesValidator();
         }
 
         [HttpGet("{rolId}", Name = nameof(GetById))]
@@ -40,23 +36,19 @@ namespace Harold.IdentityProvider.API.Controllers
         }
 
         [HttpPost]
-        public IActionResult Create([FromBody] Roles rol)
+        [ValidateModelState]
+        public IActionResult Create([FromBody] [CustomizeValidator(RuleSet = ("default,create"))] Roles rol)
         {
-            _validator.Validate(rol, ruleSet: "default,create").AddToModelState(ModelState, null);            
-            if (!ModelState.IsValid) return StatusCode(422, new ValidationResultModel(ModelState));
-
             _unitOfWork.Roles.Create(rol);
             _unitOfWork.Save();
-            return CreatedAtRoute(nameof(RolesController.GetById), new { rolId = rol.RolId }, rol);
+            return CreatedAtRoute(nameof(RolesController.GetById), new { roleId = rol.RoleId }, rol);
         }
 
         [HttpPut]
-        public IActionResult Update([FromBody] Roles rol)
+        [ValidateModelState]
+        public IActionResult Update([FromBody] [CustomizeValidator(RuleSet = ("default,update"))] Roles rol)
         {
-            _validator.Validate(rol, ruleSet: "default,update").AddToModelState(ModelState, null);
-            if (!ModelState.IsValid) return StatusCode(422, new ValidationResultModel(ModelState));
-
-            var dbRol = _unitOfWork.Roles.GetById(rol.RolId);
+            var dbRol = _unitOfWork.Roles.GetById(rol.RoleId);
             if (dbRol == null) return NotFound();
             _unitOfWork.Roles.Update(rol);
             _unitOfWork.Save();
@@ -66,8 +58,8 @@ namespace Harold.IdentityProvider.API.Controllers
         [HttpDelete("{rolId}")]
         public IActionResult Delete([FromRoute] int rolId)
         {
-            var logins = _unitOfWork.Logins.Get(filter: l => l.RoleId == rolId);
-            if (logins.Any()) return BadRequest("Can't delete rol. It has related logins. Delete those logins first.");
+            var users = _unitOfWork.Users.Get(filter: l => l.RoleId == rolId);
+            if (users.Any()) return BadRequest("Can't delete rol. It has related logins. Delete those logins first.");
             var rol = _unitOfWork.Roles.GetById(rolId);
             if (rol == null) return NotFound();
             _unitOfWork.Roles.Delete(rol);

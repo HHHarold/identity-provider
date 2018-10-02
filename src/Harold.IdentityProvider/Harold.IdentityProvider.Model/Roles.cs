@@ -2,17 +2,17 @@
 
 namespace Harold.IdentityProvider.Model.Models
 {
-    public partial class Roles
+    public class Roles
     {
         public Roles()
         {
-            Logins = new HashSet<Logins>();
+            Users = new HashSet<Users>();
         }
 
-        public int RolId { get; set; }
+        public int RoleId { get; set; }
         public string Name { get; set; }
         public string Description { get; set; }
 
-        public ICollection<Logins> Logins { get; set; }
+        public ICollection<Users> Users { get; set; }
     }
 }

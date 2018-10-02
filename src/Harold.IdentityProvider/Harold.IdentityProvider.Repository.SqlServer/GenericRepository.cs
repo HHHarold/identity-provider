@@ -51,7 +51,7 @@ namespace Harold.IdentityProvider.Repository.SqlServer
         public T GetById(object id)
         {
             var entity = dbSet.Find(id);
-            _context.Entry(entity).State = EntityState.Detached;
+            if(entity != null) _context.Entry(entity).State = EntityState.Detached;
             return entity;
         }
 

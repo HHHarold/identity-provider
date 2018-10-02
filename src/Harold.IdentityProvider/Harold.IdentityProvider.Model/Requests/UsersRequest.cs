@@ -1,15 +1,12 @@
-﻿namespace Harold.IdentityProvider.Model.Models
+﻿namespace Harold.IdentityProvider.Model.Requests
 {
-    public class Users
+    public class UsersRequest
     {
         public int UserId { get; set; }
         public string FirstName { get; set; }
         public string LastName { get; set; }
         public int RoleId { get; set; }
         public string Username { get; set; }
-        public byte[] PasswordSalt { get; set; }
-        public byte[] PasswordHash { get; set; }
-
-        public Roles Role { get; set; }
+        public string Password { get; set; }
     }
 }
