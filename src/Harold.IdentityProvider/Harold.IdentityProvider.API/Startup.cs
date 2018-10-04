@@ -14,6 +14,7 @@ using FluentValidation.AspNetCore;
 using FluentValidation;
 using Harold.IdentityProvider.Model.FluentValidators;
 using Harold.IdentityProvider.Model.Models;
+using Harold.IdentityProvider.Model.Requests;
 
 namespace Harold.IdentityProvider.API
 {
@@ -42,8 +43,9 @@ namespace Harold.IdentityProvider.API
             services.AddSingleton(Configuration);
             services.AddDbContext<HaroldIdentityProviderContext>(options => options.UseSqlServer(Configuration.GetConnectionString("SqlServer")));
             services.AddTransient<IUnitOfWork, UnitOfWork>();
-            services.AddSingleton<IUsersService, UsersService>();
+            services.AddTransient<IUsersService, UsersService>();
             services.AddTransient<IValidator<Roles>, RolesValidator>();
+            services.AddTransient<IValidator<UsersRequest>, UsersRequestValidator>();
             services.AddAutoMapper();
         }
 

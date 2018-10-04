@@ -30,10 +30,9 @@ namespace Harold.IdentityProvider.Service
             if (_unitOfWork.Users.Get(filter: u => u.Username == user.Username).Any())
                 return new GenericResponse<Users> { Success = false, Message = "Username is not available" };
 
-            _unitOfWork.Users.Create(user);
-
-            user.PasswordHash = CreatePasswordHash(password);
-            user.PasswordHash = CreatePasswordSalt(password);
+            CreatePasswordHash(password, out byte[] passwordHash, out byte[] passwordSalt);
+            user.PasswordHash = passwordHash;
+            user.PasswordSalt = passwordSalt;
 
             _unitOfWork.Users.Create(user);
             _unitOfWork.Save();
@@ -41,22 +40,15 @@ namespace Harold.IdentityProvider.Service
             return new GenericResponse<Users> { Success = true, Data = user };
         }
 
-        private static byte[] CreatePasswordHash(string password)
-        {
-            using(var hmac = new System.Security.Cryptography.HMACSHA512())
-            {
-                return hmac.ComputeHash(System.Text.Encoding.UTF8.GetBytes(password));
-            }
-        }
-
-        private static byte[] CreatePasswordSalt(string password)
+        private static void CreatePasswordHash(string password, out byte[] passwordHash, out byte[] passwordSalt)
         {
             using (var hmac = new System.Security.Cryptography.HMACSHA512())
             {
-                return hmac.Key;
+                passwordSalt = hmac.Key;
+                passwordHash = hmac.ComputeHash(System.Text.Encoding.UTF8.GetBytes(password));
             }
         }
-
+        
         private static bool VerifyPasswordHash (string password, byte[] storedHash, byte[] storedSalt)
         {
             //TODO: Verify this exepctions

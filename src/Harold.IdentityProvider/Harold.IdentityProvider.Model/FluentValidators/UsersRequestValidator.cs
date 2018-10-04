@@ -18,6 +18,11 @@ namespace Harold.IdentityProvider.Model.FluentValidators
                 RuleFor(x => x.UserId).NotEmpty();
             });
 
+            RuleSet("authenticate", () =>
+            {
+                RuleFor(x => x.Password).NotEmpty();
+                RuleFor(x => x.Username).NotEmpty();
+            });
 
             RuleFor(x => x.Username).NotEmpty().MaximumLength(20);
             RuleFor(x => x.FirstName).NotEmpty().MaximumLength(20);

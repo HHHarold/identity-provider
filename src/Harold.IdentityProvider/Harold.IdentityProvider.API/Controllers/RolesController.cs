@@ -19,7 +19,7 @@ namespace Harold.IdentityProvider.API.Controllers
             _unitOfWork = unitOfWork;
         }
 
-        [HttpGet("{rolId}", Name = nameof(GetById))]
+        [HttpGet("{roleId}", Name = nameof(GetById))]
         public IActionResult GetById([FromRoute]int rolId)
         {
             var rol = _unitOfWork.Roles.GetById(rolId);

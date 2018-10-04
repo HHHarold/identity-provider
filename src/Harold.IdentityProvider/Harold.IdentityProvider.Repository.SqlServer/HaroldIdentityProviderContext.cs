@@ -53,11 +53,11 @@ namespace Harold.IdentityProvider.Repository.SqlServer
 
                 entity.Property(e => e.PasswordHash)
                     .IsRequired()
-                    .HasMaxLength(32);
+                    .HasMaxLength(64);
 
                 entity.Property(e => e.PasswordSalt)
                     .IsRequired()
-                    .HasMaxLength(64);
+                    .HasMaxLength(128);
 
                 entity.Property(e => e.Username)
                     .IsRequired()
