@@ -1,5 +1,7 @@
-﻿using Harold.IdentityProvider.IService;
+﻿using AutoMapper;
+using Harold.IdentityProvider.IService;
 using Harold.IdentityProvider.Model.Models;
+using Harold.IdentityProvider.Model.Response;
 using Harold.IdentityProvider.Repository;
 using System;
 using System.Linq;
@@ -9,20 +11,22 @@ namespace Harold.IdentityProvider.Service
     public class UsersService : IUsersService
     {
         private readonly IUnitOfWork _unitOfWork;
-        public UsersService(IUnitOfWork unitOfWork)
+        private readonly IMapper _mapper;
+        public UsersService(IUnitOfWork unitOfWork, IMapper mapper)
         {
             _unitOfWork = unitOfWork;
+            _mapper = mapper;
         }
 
-        public GenericResponse<Users> Authenticate(string username, string password)
+        public GenericResponse<UsersResponse> Authenticate(string username, string password)
         {
-            Users login = _unitOfWork.Users.Get(filter: u => u.Username== username).FirstOrDefault();
+            Users user = _unitOfWork.Users.Get(filter: u => u.Username== username).FirstOrDefault();
 
-            if (login == null) return new GenericResponse<Users> { Success = false, Message = "Username does not exists." };
-            if (!VerifyPasswordHash(password, login.PasswordHash, login.PasswordSalt))
-                return new GenericResponse<Users> { Success = false, Message = "Incorrect password." };
+            if (user == null) return new GenericResponse<UsersResponse> { Success = false, Message = "Username does not exists." };
+            if (!VerifyPasswordHash(password, user.PasswordHash, user.PasswordSalt))
+                return new GenericResponse<UsersResponse> { Success = false, Message = "Incorrect password." };
 
-            return new GenericResponse<Users> { Success = true, Data = login };
+            return new GenericResponse<UsersResponse> { Success = true, Data = _mapper.Map<UsersResponse>(user) };
         }
 
         public GenericResponse<Users> Register(Users user, string password)

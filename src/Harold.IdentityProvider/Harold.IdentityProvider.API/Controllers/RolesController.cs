@@ -2,6 +2,7 @@
 using Harold.IdentityProvider.API.Filters;
 using Harold.IdentityProvider.Model.Models;
 using Harold.IdentityProvider.Repository;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Linq;
 
@@ -9,6 +10,7 @@ using System.Linq;
 
 namespace Harold.IdentityProvider.API.Controllers
 {
+    [Authorize]
     [Route("api/[controller]")]
     [ApiController]
     public class RolesController : ControllerBase

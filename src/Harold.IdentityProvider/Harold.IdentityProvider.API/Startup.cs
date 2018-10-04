@@ -15,6 +15,12 @@ using FluentValidation;
 using Harold.IdentityProvider.Model.FluentValidators;
 using Harold.IdentityProvider.Model.Models;
 using Harold.IdentityProvider.Model.Requests;
+using Harold.IdentityProvider.API.Models;
+using System.Text;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using System.Threading.Tasks;
+using Microsoft.IdentityModel.Tokens;
+using Microsoft.Extensions.Logging;
 
 namespace Harold.IdentityProvider.API
 {
@@ -33,24 +39,63 @@ namespace Harold.IdentityProvider.API
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddCors();
+            services.AddDbContext<HaroldIdentityProviderContext>(options => options.UseSqlServer(Configuration.GetConnectionString("SqlServer")));
             services.AddMvc()
                     .AddFluentValidation()
                     .SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
+            services.AddAutoMapper();            
             services.Configure<ApiBehaviorOptions>(options =>
             {
                 options.SuppressModelStateInvalidFilter = true;
             });
             services.AddSingleton(Configuration);
-            services.AddDbContext<HaroldIdentityProviderContext>(options => options.UseSqlServer(Configuration.GetConnectionString("SqlServer")));
+                        
+            // configure strongly typed settings objects
+            var appSettingsSection = Configuration.GetSection("AppSettings");
+            services.Configure<AppSettings>(appSettingsSection);
+
+            // configure jwt authentication
+            var appSettings = appSettingsSection.Get<AppSettings>();
+            var key = Encoding.ASCII.GetBytes(appSettings.Secret);
+            services.AddAuthentication(x =>
+            {
+                x.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+                x.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+            })
+            .AddJwtBearer(x =>
+            {
+                x.Events = new JwtBearerEvents
+                {
+                   OnTokenValidated = context =>
+                   {
+                       var unitOfWork = context.HttpContext.RequestServices.GetRequiredService<IUnitOfWork>();
+                       var userId = int.Parse(context.Principal.Identity.Name);
+                       var user = unitOfWork.Users.GetById(userId);
+                       if (user == null) context.Fail("Unauthorized");
+                       return Task.CompletedTask;
+                   }
+                };
+                x.RequireHttpsMetadata = false;
+                x.SaveToken = true;
+                x.TokenValidationParameters = new TokenValidationParameters
+                {
+                   ValidateIssuerSigningKey = true,
+                   IssuerSigningKey = new SymmetricSecurityKey(key),
+                   ValidateIssuer = false,
+                   ValidateAudience = false
+                };
+            });
+
+            // configure DI for application services
             services.AddTransient<IUnitOfWork, UnitOfWork>();
             services.AddTransient<IUsersService, UsersService>();
             services.AddTransient<IValidator<Roles>, RolesValidator>();
             services.AddTransient<IValidator<UsersRequest>, UsersRequestValidator>();
-            services.AddAutoMapper();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IHostingEnvironment env)
+        public void Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory)
         {
             if (env.IsDevelopment())
             {
@@ -60,6 +105,18 @@ namespace Harold.IdentityProvider.API
             {
                 app.UseHsts();
             }
+
+            loggerFactory.AddConsole(Configuration.GetSection("Logging"));
+            loggerFactory.AddDebug();
+
+            // global cors policy
+            app.UseCors(x => x
+                .AllowAnyOrigin()
+                .AllowAnyMethod()
+                .AllowAnyHeader()
+                .AllowCredentials());
+
+            app.UseAuthentication();
 
             app.UseHttpsRedirection();
             app.UseMvc();
