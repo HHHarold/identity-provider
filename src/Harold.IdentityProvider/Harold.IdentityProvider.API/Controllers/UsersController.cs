@@ -5,12 +5,16 @@ using Harold.IdentityProvider.API.Models;
 using Harold.IdentityProvider.IService;
 using Harold.IdentityProvider.Model.Models;
 using Harold.IdentityProvider.Model.Requests;
+using Harold.IdentityProvider.Model.Response;
+using Harold.IdentityProvider.Repository;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using System;
+using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
+using System.Linq;
 using System.Security.Claims;
 using System.Text;
 
@@ -21,12 +25,15 @@ namespace Harold.IdentityProvider.API.Controllers
     [ApiController]
     public class UsersController : ControllerBase
     {
+        private readonly IUnitOfWork _unitOfWork;
         private readonly IUsersService _usersService;
         private readonly IMapper _mapper;
         private readonly AppSettings _appSettings;
             
-        public UsersController(IUsersService usersService, IMapper mapper, IOptions<AppSettings> appSettings)
+        public UsersController(IUnitOfWork unitOfWork, IUsersService usersService, IMapper mapper, 
+                                IOptions<AppSettings> appSettings)
         {
+            _unitOfWork = unitOfWork;
             _usersService = usersService;
             _mapper = mapper;
             _appSettings = appSettings.Value;            
@@ -34,6 +41,7 @@ namespace Harold.IdentityProvider.API.Controllers
 
         [AllowAnonymous]
         [HttpPost("authenticate")]
+        [ValidateModelState]
         public IActionResult Authenticate([FromBody] [CustomizeValidator(RuleSet = ("authenticate"))] UsersRequest userRequest)
         {
             var result = _usersService.Authenticate(userRequest.Username, userRequest.Password);
@@ -65,5 +73,31 @@ namespace Harold.IdentityProvider.API.Controllers
             if (!result.Success) return BadRequest(result.Message);
             return NoContent();
         }
+
+        [HttpGet]
+        public IActionResult GetAll()
+        {
+            var users = _unitOfWork.Users.Get(orderBy: "FirstName");
+            if (users.Count() == 0) return NotFound();
+            var userResponse = _mapper.Map<IEnumerable<UsersResponse>>(users);
+            return Ok(userResponse);
+        }
+
+        [HttpGet("{userId}")]
+        public IActionResult GetById(int userId)
+        {
+            var user = _unitOfWork.Users.GetById(userId);
+            if (user == null) return NotFound();
+            var userDto = _mapper.Map<UsersResponse>(user);
+            return Ok(userDto);
+        }
+
+        //[HttpPut]
+        //public IActionResult Update([CustomizeValidator(RuleSet = ("default,update"))] UsersRequest userRequest)
+        //{
+        //    var userDb = _unitOfWork.Users.GetById(userRequest.UserId);
+        //    if (userDb == null) return NotFound();
+
+        //}
     }
 }
