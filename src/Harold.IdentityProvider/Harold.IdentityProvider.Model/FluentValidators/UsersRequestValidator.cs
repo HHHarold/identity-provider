@@ -10,7 +10,7 @@ namespace Harold.IdentityProvider.Model.FluentValidators
             RuleSet("create", () =>
             {
                 RuleFor(x => x.UserId).Empty();
-                
+                RuleFor(x => x.Password).NotEmpty();
             });
 
             RuleSet("update", () =>
@@ -26,8 +26,7 @@ namespace Harold.IdentityProvider.Model.FluentValidators
 
             RuleFor(x => x.Username).NotEmpty().MaximumLength(20);
             RuleFor(x => x.FirstName).NotEmpty().MaximumLength(20);
-            RuleFor(x => x.LastName).NotEmpty().MaximumLength(20);
-            RuleFor(x => x.Password).NotEmpty();
+            RuleFor(x => x.LastName).NotEmpty().MaximumLength(20);            
             RuleFor(x => x.RoleId).NotEmpty();
         }
     }

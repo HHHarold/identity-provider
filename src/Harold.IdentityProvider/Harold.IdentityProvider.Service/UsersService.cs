@@ -29,10 +29,10 @@ namespace Harold.IdentityProvider.Service
             return new GenericResponse<UsersResponse> { Success = true, Data = _mapper.Map<UsersResponse>(user) };
         }
 
-        public GenericResponse<Users> Register(Users user, string password)
+        public GenericResponse<bool> Register(Users user, string password)
         {
             if (_unitOfWork.Users.Get(filter: u => u.Username == user.Username).Any())
-                return new GenericResponse<Users> { Success = false, Message = "Username is not available" };
+                return new GenericResponse<bool> { Success = false, Message = "Username is not available", Data = false };
 
             CreatePasswordHash(password, out byte[] passwordHash, out byte[] passwordSalt);
             user.PasswordHash = passwordHash;
@@ -41,7 +41,31 @@ namespace Harold.IdentityProvider.Service
             _unitOfWork.Users.Create(user);
             _unitOfWork.Save();
 
-            return new GenericResponse<Users> { Success = true, Data = user };
+            return new GenericResponse<bool> { Success = true, Data = true };
+        }
+
+        public GenericResponse<bool> Update(Users userUpdated, Users userToUpdate, string password = null)
+        {
+            if(userUpdated.Username != userToUpdate.Username)
+            {
+                if (_unitOfWork.Users.Get(filter: u => u.Username == userUpdated.Username).Any())
+                    return new GenericResponse<bool> { Success = false, Message = $"Username {userUpdated.Username} is alredy taken.", Data = false };
+            }
+
+            if (!string.IsNullOrWhiteSpace(password))
+            {
+                CreatePasswordHash(password, out byte[] passwordHash, out byte[] passwordSalt);
+                userUpdated.PasswordHash = passwordHash;
+                userUpdated.PasswordSalt = passwordSalt;
+            } else
+            {
+                userUpdated.PasswordHash = userToUpdate.PasswordHash;
+                userUpdated.PasswordSalt = userToUpdate.PasswordSalt;
+            }
+
+            _unitOfWork.Users.Update(userUpdated);
+            _unitOfWork.Save();
+            return new GenericResponse<bool> { Success = true, Data = true };
         }
 
         private static void CreatePasswordHash(string password, out byte[] passwordHash, out byte[] passwordSalt)
@@ -69,6 +93,6 @@ namespace Harold.IdentityProvider.Service
             return true;
         }
 
-       
+        
     }
 }

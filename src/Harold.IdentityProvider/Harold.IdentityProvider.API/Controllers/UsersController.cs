@@ -92,12 +92,26 @@ namespace Harold.IdentityProvider.API.Controllers
             return Ok(userDto);
         }
 
-        //[HttpPut]
-        //public IActionResult Update([CustomizeValidator(RuleSet = ("default,update"))] UsersRequest userRequest)
-        //{
-        //    var userDb = _unitOfWork.Users.GetById(userRequest.UserId);
-        //    if (userDb == null) return NotFound();
+        [HttpPut]
+        [ValidateModelState]
+        public IActionResult Update([CustomizeValidator(RuleSet = ("default,update"))] UsersRequest userRequest)
+        {
+            var userToUpdate = _unitOfWork.Users.GetById(userRequest.UserId);
+            if (userToUpdate == null) return NotFound();            
+            var user = _mapper.Map<Users>(userRequest);
+            var result = _usersService.Update(user, userToUpdate, userRequest.Password);
+            if (!result.Success) return BadRequest(result.Message);
+            return NoContent();
+        }
 
-        //}
+        [HttpDelete("{userId}")]
+        public IActionResult Delete([FromRoute] int userId)
+        {            
+            var user = _unitOfWork.Users.GetById(userId);
+            if (user == null) return NotFound();
+            _unitOfWork.Users.Delete(user);
+            _unitOfWork.Save();
+            return NoContent();
+        }
     }
 }
